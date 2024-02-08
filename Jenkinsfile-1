@@ -1,12 +1,34 @@
 pipeline {
-  agent {
-    dockerContainer { image 'liquibase/liquibase:4.26.0' }
-  }
-  stages {
-    stage('Test') {
-      steps {
-        sh 'liquibase --version'
-      }
+    agent {
+        docker { 
+            image 'liquibase/liquibase:latest' // Consider using a specific version instead of 'latest' for consistent builds
+            args '-u root' // Add necessary Docker arguments here, such as user or mount options
+        }
     }
-  }
+    stages {
+        stage('Test') {
+            steps {
+                script {
+                    // Running Liquibase version command as a test step
+                    sh 'liquibase --version'
+                }
+            }
+        }
+        // Consider adding more stages for your CI/CD process, such as build, deploy, etc.
+    }
+    post {
+        always {
+            // Actions to perform after the pipeline execution, such as cleanup
+            echo 'Pipeline execution is finished!'
+        }
+        success {
+            // Actions to perform if pipeline succeeds
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            // Actions to perform if pipeline fails
+            echo 'Pipeline failed!'
+        }
+    }
 }
+
